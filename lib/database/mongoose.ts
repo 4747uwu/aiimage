@@ -9,6 +9,7 @@ interface MongooseConnection {
 
 // Augment the global scope correctly
 declare global {
+  // eslint-disable-next-line no-var
   var mongoose: MongooseConnection | undefined;
 }
 
