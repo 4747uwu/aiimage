@@ -7,13 +7,9 @@ interface MongooseConnection {
   promise: Promise<Mongoose> | null;
 }
 
-// Extend the NodeJS global object to include the mongoose property
+// Augment the global scope correctly
 declare global {
-  namespace NodeJS {
-    interface Global {
-      mongoose: MongooseConnection;
-    }
-  }
+  var mongoose: MongooseConnection | undefined;
 }
 
 // Initialize the cached connection
