@@ -1,4 +1,4 @@
-import mongoose, {Mongoose} from "mongoose";
+import mongoose, { Mongoose } from "mongoose";
 
 const MONGODB_URL = process.env.MONGODB_URL;
 
@@ -7,26 +7,36 @@ interface MongooseConnection {
   promise: Promise<Mongoose> | null;
 }
 
-let cached: MongooseConnection = (global as any).mongoose
-
-if(!cached) {
-  cached = (global as any).mongoose = { 
-    conn: null, promise: null 
+// Extend the NodeJS global object to include the mongoose property
+declare global {
+  namespace NodeJS {
+    interface Global {
+      mongoose: MongooseConnection;
+    }
   }
 }
 
-export const connectToDatabase = async () => {
-  if(cached.conn) return cached.conn;
+// Initialize the cached connection
+let cached: MongooseConnection = global.mongoose || { conn: null, promise: null };
 
-  if(!MONGODB_URL) throw new Error('Missing MONGODB_URL');
+if (!cached) {
+  cached = global.mongoose = { 
+    conn: null, promise: null 
+  };
+}
+
+export const connectToDatabase = async (): Promise<Mongoose> => {
+  if (cached.conn) return cached.conn;
+
+  if (!MONGODB_URL) throw new Error('Missing MONGODB_URL');
 
   cached.promise = 
     cached.promise || 
     mongoose.connect(MONGODB_URL, { 
       dbName: 'saasapp', bufferCommands: false 
-    })
+    });
 
   cached.conn = await cached.promise;
 
   return cached.conn;
-}
+};
