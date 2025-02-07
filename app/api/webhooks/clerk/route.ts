@@ -64,10 +64,10 @@ export async function POST(req: Request) {
     const user = {
       clerkId: id,
       email: email_addresses[0].email_address,
-      username: username!,
-      firstName: first_name,
-      lastName: last_name,
-      photo: image_url,
+      username: username || id, // fallback to id if username is null
+      firstName: first_name || "", // provide empty string as fallback
+      lastName: last_name || "", // provide empty string as fallback
+      photo: image_url || "", // provide empty string as fallback
     };
 
     const newUser = await createUser(user);
@@ -89,10 +89,10 @@ export async function POST(req: Request) {
     const { id, image_url, first_name, last_name, username } = evt.data;
 
     const user = {
-      firstName: first_name,
-      lastName: last_name,
-      username: username!,
-      photo: image_url,
+      firstName: first_name || "", // provide empty string as fallback
+      lastName: last_name || "", // provide empty string as fallback
+      username: username || id, // fallback to id if username is null
+      photo: image_url || "", // provide empty string as fallback
     };
 
     const updatedUser = await updateUser(id, user);
